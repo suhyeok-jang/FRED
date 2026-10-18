@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=67", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fred"
+version = "0.1.0"
+requires-python = "==3.10.*"
+dependencies = [
+    "torch==2.7.0",
+    "torchvision==0.22.0",
+    "torchcodec==0.4.0",
+    "transformers==4.57.0",
+    "diffusers==0.37.1",
+    "accelerate",
+    "deepspeed==0.19.7",
+    "flash-attn==2.7.4.post1",
+    "safetensors",
+    "huggingface-hub",
+    "numpy==1.26.4",
+    "pandas==2.2.3",
+    "pyarrow",
+    "albumentations==1.4.18",
+    "av==15.0.0",
+    "pyyaml",
+    "tqdm",
+    "termcolor==3.2.0",
+    "tyro==0.9.17",
+    "wandb==0.23.0",
+    "gymnasium==1.2.2",
+    "pyzmq==27.0.1",
+    "msgpack==1.1.0",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "ipython"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fred*"]
+
+[tool.uv]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[tool.uv.extra-build-dependencies]
+flash-attn = ["torch==2.7.0", "numpy==1.26.4"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["fred"]
+exclude = [".venv", "external_dependencies", "*.ipynb"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.isort]
+case-sensitive = false
+combine-as-imports = true
+force-sort-within-sections = true
+lines-after-imports = 2
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]

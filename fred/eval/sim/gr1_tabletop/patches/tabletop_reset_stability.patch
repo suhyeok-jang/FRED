@@ -1,0 +1,56 @@
+diff --git a/robocasa/environments/tabletop/tabletop.py b/robocasa/environments/tabletop/tabletop.py
+index c32104c..e14feff 100644
+--- a/robocasa/environments/tabletop/tabletop.py
++++ b/robocasa/environments/tabletop/tabletop.py
+@@ -1090,6 +1090,51 @@ class Tabletop(ManipulationEnv, metaclass=TabletopEnvMeta):
+                     l_elbow_pitch_range[0] * 0.1 + l_elbow_pitch_range[1] * 0.9
+                 )
+ 
++        # Opt-in extended settle (see _extended_reset_settle below). Threshold-free by design:
++        # any accept/reject decision at reset would sit on a floating-point boundary and let
++        # tiny cross-node contact-solver differences flip WHICH placement a model sees.
++        # Episode-level filtering therefore lives OFFLINE (seed manifest); reset only settles.
++        if not self.deterministic_reset and self.placement_initializer is not None:
++            _settle_s = float(os.environ.get("GR1_RESET_SETTLE_S", "0") or 0)
++            if _settle_s > 0:
++                self._extended_reset_settle(_settle_s)
++
++    # ── extended reset settle (2026-09-05, opt-in via GR1_RESET_SETTLE_S=<seconds>) ──────
++    # Problem: the stock reset settles only ~0.5 s (the 10-control-step loop above), so tall or
++    # cluttered placements hand the policy a FIRST OBSERVATION taken mid-fall. This extends the
++    # settle for a FIXED duration before observations exist.
++    #
++    # Deliberately free of any accept/reject logic: a threshold check at reset would sit on a
++    # floating-point boundary, and cross-node/library contact-solver jitter could then flip which
++    # placement gets accepted — different models would silently see different episodes. A fixed-
++    # duration settle is a pure physics rollout: same seed -> same placement -> (near-)identical
++    # settled state, with no branch to amplify jitter. Which EPISODES are valid is decided once,
++    # offline, and frozen in a seed manifest consumed by the eval wrapper.
++    def _extended_reset_settle(self, seconds):
++        # Re-sync controller goals to the CURRENT joint positions first. The GR1 branch above
++        # teleports the elbow-pitch joints AFTER the stock settle loop (which had captured goals
++        # at the pre-teleport pose), so stepping without this re-sync lets the controller drag the
++        # arm ~30 deg / 13 cm back toward stale goals during the settle — the policy would then
++        # start from an arm pose the training data never shows at t=0. reset_goal() sets
++        # goal_qpos = current qpos, so the arm holds the same pose the un-settled protocol
++        # exposes at the first observation.
++        # ★ reset_goal() reads the controller's CACHED joint_pos, which is still the
++        #   pre-teleport pose right after the qpos write (verified: without the forced update
++        #   the arm still drifted exactly 13.1 cm). Force-refresh the cache from live sim
++        #   state first, THEN pin the goals.
++        self.sim.forward()
++        for _pc in self.robots[0].composite_controller.part_controllers.values():
++            _pc.update(force=True)
++        self.robots[0].composite_controller.reset()
++        zero = np.zeros(self.action_spec[0].shape)
++        sub = int(self.control_timestep / self.model_timestep)
++        n_ctrl = int(round(seconds / self.control_timestep))
++        for _ in range(n_ctrl):
++            for _ in range(sub):
++                self.sim.step1()
++                self._pre_action(zero, False)
++                self.sim.step2()
++
+     def _get_obj_cfgs(self):
+         """
+         Returns a list of object configurations to use in the environment.

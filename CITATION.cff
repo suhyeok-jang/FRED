@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite our paper."
+title: "FRED: Self-Distilling Future Video Representations for World Action Models"
+authors:
+  - family-names: Jang
+    given-names: Huiwon
+  - family-names: Jang
+    given-names: Suhyeok
+  - family-names: Kang
+    given-names: Hyeonmo
+  - family-names: Kim
+    given-names: Seungku
+  - family-names: Shin
+    given-names: Jinwoo
+  - family-names: Yu
+    given-names: Sihyun
+license: Apache-2.0
+repository-code: "https://github.com/suhyeok-jang/FRED"
+url: "https://huiwon-jang.github.io/FRED/"
+preferred-citation:
+  type: article
+  title: "Self-Distilling Future Video Representations for World Action Models"
+  authors:
+    - family-names: Jang
+      given-names: Huiwon
+    - family-names: Jang
+      given-names: Suhyeok
+    - family-names: Kang
+      given-names: Hyeonmo
+    - family-names: Kim
+      given-names: Seungku
+    - family-names: Shin
+      given-names: Jinwoo
+    - family-names: Yu
+      given-names: Sihyun
+  journal: "arXiv preprint arXiv:2610.30320"
+  year: 2026
+  url: "https://arxiv.org/abs/2610.30320"
+  identifiers:
+    - type: doi
+      value: 10.48550/arXiv.2610.30320
+      description: "arXiv DOI"

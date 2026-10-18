@@ -1,0 +1,16 @@
+FRED: Self-Distilling Future Video Representations for World Action Models
+Copyright 2026 Huiwon Jang and Suhyeok Jang
+
+This product includes software adapted from the following projects, licensed
+under the Apache License, Version 2.0:
+  - Isaac-GR00T (https://github.com/NVIDIA/Isaac-GR00T)
+    Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+  - Wan2.2 (https://github.com/Wan-Video/Wan2.2)
+    Copyright 2024-2025 The Alibaba Wan Team Authors. All rights reserved.
+  - diffusers (https://github.com/huggingface/diffusers)
+  - DINO (https://github.com/facebookresearch/dino)
+  - iBOT (https://github.com/bytedance/ibot)
+
+The packages under external_dependencies/ (LIBERO, RoboCasa, RoboCasa GR-1
+tabletop tasks) are distributed under their own MIT licenses; see the LICENSE
+file in each directory.
